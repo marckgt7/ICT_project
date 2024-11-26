@@ -15,8 +15,7 @@ def delete_files_in_folder(folder_path):
     else:
         print(f"La cartella {folder_path} non esiste.")
 
-# Cancella i file prima di eseguire i comandi
-delete_files_in_folder(r"C:\Users\carlo\OneDrive\Desktop\MAGISTRALE\ICT\results")
+
 
 commands = {
 
@@ -78,6 +77,7 @@ def run_command(command, output_file):
             encoding='utf-8',  # Forza la codifica UTF-8
             check=True
         )
+        print("Sto facendo", command)
         # Salva il risultato nel file
         with open(output_file, "a", encoding='utf-8') as file:  # Usa UTF-8 anche per il file
             file.write(f"--- Output del comando '{command}' ---\n")
@@ -87,9 +87,16 @@ def run_command(command, output_file):
         with open(output_file, "a", encoding='utf-8') as file:
             file.write(f"--- Errore nell'esecuzione di '{command}' ---\n")
             file.write(e.stderr + "\n")
+            print("Ho fallito", command)
+
 
 # Esegui i comandi contemporaneamente
+# Ensure the 'results' directory exists
+results_dir = "results"
+os.makedirs(results_dir, exist_ok=True)
+delete_files_in_folder(os.path.join(results_dir))
+
 with ThreadPoolExecutor() as executor:
     for command, output_file in commands.items():
-        output_file = os.path.join("results", output_file)
+        output_file = os.path.join(results_dir, output_file)
         executor.submit(run_command, command, output_file)
