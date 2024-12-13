@@ -10,13 +10,13 @@ output_dir = "generated_valid_secrets"
 os.makedirs(output_dir, exist_ok=True)
 
 def sanitize_filename(name):
-    return re.sub(r'[\/:*?"<>|]', '_', name)
+    return re.sub(r'[\\/:*?"<>|]', '_', name)
 
 def extract_length_from_regex(regex):
     """
     Estrae la lunghezza totale del segreto, supportando regex complesse.
     """
-    length_matches = re.findall(r"(?:\[.*?\]|[a-zA-Z0-9\\\/\+=\-_\(\):])\{(\d+),?(\d+)?\}", regex)
+    length_matches = re.findall(r"(?:\[.*?\]|[a-zA-Z0-9\\\\/\+=\-_\(\):])\{(\d+),?(\d+)?\}", regex)
     if length_matches:
         min_length_total = 0
         max_length_total = 0
@@ -80,6 +80,9 @@ def generate_valid_secret_from_regex(regex):
         if prefix_match:
             potential_prefixes = prefix_match.group(1).split('|')
             prefix = next((p + "_" if secret.startswith(p + "_") else p for p in potential_prefixes if secret.startswith(p)), "")
+        else:
+            with open("regex.xlsx", "a") as regex_file:
+             regex_file.write(regex + "\n")
 
         if re.search(r"(?:\.|\[\n\r\])", regex):
             use_space = True
@@ -99,6 +102,20 @@ def generate_valid_secret_from_regex(regex):
 excel_file_path = "Secret Regular Expression.xlsx"
 regex_df = pd.read_excel(excel_file_path)
 
+# Aggiungi le nuove regex richieste
+additional_regexes = [
+    "\\b(ey[a-zA-Z0-9-._]{153}.ey[a-zA-Z0-9-._]{916,1000})\\b",
+    "\\b(BBFF-[0-9a-zA-Z]{30})\\b",
+    "\\b([A-Za-z0-9]{14}.atlasv1.[A-Za-z0-9]{67})\\b"
+]
+
+for new_regex in additional_regexes:
+    regex_df = pd.concat([regex_df, pd.DataFrame({
+        'Secret Type': ["Additional Regex"],
+        'Regular Expression': [new_regex]
+    })], ignore_index=True)
+
+# Raggruppa e genera i segreti come prima
 grouped_detectors = {}
 for _, row in regex_df.iterrows():
     full_name = row['Secret Type']

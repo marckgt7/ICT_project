@@ -15,10 +15,14 @@ def count_unique_detectors_and_secrets(file_path):
         # Usa una regex per trovare tutte le occorrenze del tipo di detector e raw result
         detector_pattern = r"Detector Type:\s*(\w+)"
         raw_result_pattern = r"Raw result:\s*([\w\W]+?)\n"
+        file_result_pattern = r"File:\s*generated_valid_secrets\\(\w+)_valid_secrets\.txt"
+
 
         # Trova tutti i detector e i relativi segreti
         detectors = re.findall(detector_pattern, content)
         raw_results = re.findall(raw_result_pattern, content)
+
+        file_result = re.findall(file_result_pattern,content)
 
         # Crea una lista di tuple con detector e segreti
         detector_secrets = []
@@ -30,14 +34,16 @@ def count_unique_detectors_and_secrets(file_path):
             detector_normalized = detector.strip().lower()
 
             # Aggiungi una tupla (detector, segreto) alla lista
-            detector_secrets.append((detector_normalized, result))
+            detector_secrets.append((detector_normalized, result, file_result[i]))
+
+
             conta += 1
 
         # Crea un DataFrame dai dati raccolti
-        df = pd.DataFrame(detector_secrets, columns=['Detector', 'Secret'])
+        df = pd.DataFrame(detector_secrets, columns=['Detector', 'Secret','file'])
 
         # Rimuovi i duplicati
-        df_unique = df.drop_duplicates(subset=['Detector', 'Secret'])
+        df_unique = df.drop_duplicates(subset=['Detector', 'Secret','file'])
         
 
         # Calcola il numero di segreti per ogni detector
@@ -55,8 +61,14 @@ excel_file_path = "Secret Regular Expression.xlsx"  # Percorso del file Excel
 
 # Esegui il conteggio dei detector e dei segreti
 unique_detector_count, detector_secrets, df_unique = count_unique_detectors_and_secrets(file_path)
-print(len(detector_secrets))
-print(len(df_unique.drop_duplicates(subset=['Detector'])))
+print(f"unique_detector_count: {unique_detector_count}")
+print(f"detector_secrets: {len(detector_secrets)}")
+print(f"df_unique : {df_unique.drop_duplicates(subset=['Detector'])}")
+output_file = "output_file.xlsx"
+df_dc = df_unique.drop_duplicates(subset=['Detector'])
+
+# Salva il DataFrame in Excel
+df_dc.to_excel(output_file, index=False)  # index=False evita di salvare l'indice del DataFrame
 
 # Leggi il file Excel per ottenere l'elenco dei detector attesi
 try:
@@ -76,9 +88,53 @@ except Exception as e:
 # Trova i detector mancanti
 detectors_found = set(detector_secrets.keys())  # Detectors trovati nel file prova.txt (formato uniformato)
 print(f"Detector found: {len(detectors_found)}")
-detectors_missing = set(expected_detectors) - detectors_found  # Detector presenti in Excel ma non trovati
+temp = list(detectors_found)
+df = pd.DataFrame(temp, columns=["Detectors"])
+df.to_excel("detectors_totali.xlsx", index=False)  # index=False evita di salvare l'indice del DataFrame
+
+try:
+    file_det = pd.read_excel("output_file.xlsx")
+
+    # Rimuovi i duplicati nella colonna 'Secret Type' (prendendo solo la prima parola e rendendola minuscola)
+    pippo = file_det.drop_duplicates(subset=['file'])
+    pippo = pippo.copy()
+    pippo['file'] = pippo['file'].apply(lambda x: x.strip().lower())
+
+    pippo = pippo['file']
+
+except Exception as e:
+    print(f"Errore durante la lettura del file Excel: {e}")
+    expected_detectors = []
+
+#print(f"questo è pippo: {set(pippo)}")
+print(f"totali: {len(set(expected_detectors))}")
+print(f"trovati: {len(set(pippo))}")
+
+detectors_missing = set(expected_detectors) - set(pippo)  # Detector presenti in Excel ma non trovati
+
+
+temp1 = list(detectors_missing)
+temp1.sort()
+#print(f"detectors_missing: {temp1}")
+
+temp1 = pd.DataFrame(temp1)
+
+temp1.to_excel("detectors_missing.xlsx", index=False)
+
+
 missing_count = len(detectors_missing)  # Contatore dei detector mancanti
 print(f"missing: {missing_count}")
+extra_detectors = set(pippo) - set(expected_detectors)
+my_list = list(extra_detectors)
+my_list.sort()
+print(f"Extra detectors not expected: {my_list}")
+
+
+unione = set(pippo).union(detectors_missing)
+numero_elementi = len(unione)
+print("Numero di elementi:", numero_elementi)
+
+
 
 # Salva la lista dei detector trovati (found) e dei detector mancanti (missing)
 with open('found.txt', 'w') as found_file:
