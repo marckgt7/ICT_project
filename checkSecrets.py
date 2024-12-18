@@ -57,7 +57,7 @@ def count_unique_detectors_and_secrets(file_path):
 
 # Percorso del file di input
 file_path = 'prova.txt'
-excel_file_path = "Secret Regular Expression.xlsx"  # Percorso del file Excel
+excel_file_path = "Secret Regular Expression MYNE.xlsx"  # Percorso del file Excel
 
 # Esegui il conteggio dei detector e dei segreti
 unique_detector_count, detector_secrets, df_unique = count_unique_detectors_and_secrets(file_path)
