@@ -14,6 +14,12 @@ risultati_prefisso_mancante = []
 risultati_charset_mancante = []
 risultati_lunghezza_mancante = []
 
+regex_no_separators = [r'(?i)(?:float)(?:.|[\n\r]){0,40}\b([a-f0-9]{16}[A-Za-z0-9+/]{42,43}\=)',
+                       r'\b([a-z]{2}[0-9]{9})\b',
+                       r'(?i)(?:front)(?:.|[\n\r]){0,40}\b([0-9a-zA-Z]{36}\.[0-9a-zA-Z.-_]{188,244})\b',
+                       r'(?i)(?:image4)(?:.|[\n\r]){0,40}\b([0-9a-zA-Z]{22}[0-9a-zA-Z=]{2})',
+                       r'(?i)(?:instabot)(?:.|[\n\r]){0,40}\b([0-9a-zA-Z=+\/]{43}[0-9a-zA-Z+\/=]{1})']
+
 def aggiungi_regex_in_excel(file_excel, regex):
     try:
         # Controlla se il file Excel esiste
@@ -42,17 +48,40 @@ def sanitize_filename(name):
     return re.sub(r'[\\/:*?"<>|]', '_', name)
 
 def expand_charset(charset):
+    """
+    Expands shorthand character ranges in the input string into full character sequences.
+    
+    Args:
+        charset (str): A string representing a character set with optional ranges (e.g., '0-9a-zA-Z').
+    
+    Returns:
+        str: The expanded character set with all ranges replaced by the full character sequences.
+    """
     expanded_charset = ""
     i = 0
+    
     while i < len(charset):
-        if i + 2 < len(charset) and charset[i + 1] == '-':
+        # Check for a valid range pattern (e.g., 'a-z')
+        if i + 2 < len(charset) and charset[i + 1] == '-' and charset[i].isalnum() and charset[i + 2].isalnum():
             start, end = charset[i], charset[i + 2]
-            expanded_charset += ''.join(chr(c) for c in range(ord(start), ord(end) + 1))
-            i += 3
+            
+            # Ensure the start and end are in the correct order and are of the same type (both digits or both letters)
+            if ord(start) <= ord(end) and (
+                (start.isdigit() and end.isdigit()) or 
+                (start.islower() and end.islower()) or 
+                (start.isupper() and end.isupper())
+            ):
+                expanded_charset += ''.join(chr(c) for c in range(ord(start), ord(end) + 1))
+                i += 3  # Skip over the range (e.g., 'a-z')
+            else:
+                expanded_charset += charset[i]  # Add the character as-is if the range is invalid
+                i += 1
         else:
-            expanded_charset += charset[i]
+            expanded_charset += charset[i]  # Add the character as-is
             i += 1
+    
     return expanded_charset
+
 
 
 def generate_random_string(charset, length):
@@ -93,12 +122,14 @@ def generate_secret(regex):
     if regex == "EMAIL A PIACERE":
        return "testuser.1005@example.com"
 
-    # Trova il prefisso
+
+    # Trova il pre fisso
     match = re.search(r"\(\?:([a-zA-Z0-9|_.-]+)\)", regex) 
     if match:
         prefisso = match.group(1).split('|')
     else:
-        match = re.search(r"\\b\(?([a-zA-Z0-9_\\-]+)\\?", regex) or \
+        match = re.search(r"\\b\(?([a-zA-Z0-9_.\\-]+)\\?", regex) or \
+                re.search(r"\(\?:([a-zA-Z0-9]+)\)", regex) or \
                 re.search(r'https://[^[]+', re.sub(r'\\', '', regex))
         if match:
             if match.lastindex is not None and match.lastindex >= 1: 
@@ -110,6 +141,8 @@ def generate_secret(regex):
             prefisso = ""
             aggiungi_regex_in_excel("regex.xlsx", regex)
             imperfect += 1
+    
+    if(prefisso == "https"): prefisso += '://'
 
     # Trova il suffisso
     # Matching per suffissi tipo ".aha.io", ".jfrog.io" non chiusi tra [] o {}
@@ -119,7 +152,7 @@ def generate_secret(regex):
 
 
     # Pattern per trovare i separatori (es. \. o \-)
-    separator_pattern = r'\\([.=_|@\-])'  # Cattura solo il carattere dopo la barra rovesciata
+    separator_pattern = r'\\(-4|[.=_|@\-])'  # Cattura -4 come entità e tutti gli altri separatori
 
     # Estrarre i separatori
     all_separators = []
@@ -140,9 +173,12 @@ def generate_secret(regex):
     # Trova tutte le coppie tra parentesi quadre e graffe
     matches = re.findall(r"\[([^\]]+)\]|\{([^\}]+)\}", regex)
 
-    if(".eyJ" in suffix_match):
+    if(".eyJ" in suffix_match or ".ey" in suffix_match):
         all_separators.insert(0, suffix_match[0])  # Usa l'elemento in testa
         suffix_match.pop(0)  # Rimuovi l'elemento appena usato
+    
+    if('-us' in regex):
+        all_separators = ['-us']
 
     if matches:
 
@@ -180,8 +216,8 @@ def generate_secret(regex):
         for coppia in coppie:
             if(coppia[0] == '\\n\\r'):
                 secret += ' '
-            elif(coppia[0] == '\\r\\n'):
-                secret += ' '
+            elif(coppia[0] == ' \\r\\n'):
+                secret += ''
             else:
                 charsets.append(coppia)
 
@@ -199,7 +235,7 @@ def generate_secret(regex):
                     secret +=  all_separators[0]  # Usa l'elemento in testa
                     all_separators.pop(0)  # Rimuovi l'elemento appena usato
                 else:
-                    if (r'\b([a-z]{2}[0-9]{9})\b' not in regex):
+                    if (regex not in regex_no_separators):
                         secret += '-'
         
         
