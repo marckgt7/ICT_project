@@ -7,13 +7,6 @@ from openpyxl import Workbook, load_workbook
 perfect = 0
 imperfect = 0
 
-# Liste per salvare i risultati
-risultati_corte = []
-risultati_lunghe = []
-risultati_prefisso_mancante = []
-risultati_charset_mancante = []
-risultati_lunghezza_mancante = []
-
 regex_no_separators = [r'(?i)(?:float)(?:.|[\n\r]){0,40}\b([a-f0-9]{16}[A-Za-z0-9+/]{42,43}\=)',
                        r'\b([a-z]{2}[0-9]{9})\b',
                        r'(?i)(?:front)(?:.|[\n\r]){0,40}\b([0-9a-zA-Z]{36}\.[0-9a-zA-Z.-_]{188,244})\b',
@@ -168,8 +161,7 @@ def generate_secret(regex):
         suffix_match.append('=')
         all_separators.remove('=')
     # Cerca charset e lunghezza
-    #matches = re.findall(r"\[([a-zA-Z0-9\-_.=!@#$%^]+)\].*?\{(\d+),?(\d+)?\}", regex) or \
-    #          re.findall(r"\[([^\]]+)\]\{(\d+),?(\d+)?\}", regex) 
+
     # Trova tutte le coppie tra parentesi quadre e graffe
     matches = re.findall(r"\[([^\]]+)\]|\{([^\}]+)\}", regex)
 
@@ -222,7 +214,6 @@ def generate_secret(regex):
                 charsets.append(coppia)
 
         for i, charset in enumerate(charsets):
-            #print(f"Charset: {charset[0]}, Lunghezza: {charset[1]}")
             random_variable_part = generate_random_string(charset[0], charset[1])
 
             if(all_separators and len(all_separators)  == len(charsets) ):
@@ -243,18 +234,10 @@ def generate_secret(regex):
         if(suffix_match):
             for suffix in suffix_match:
                 secret += suffix
-        #print(regex)
-        #print(charsets)
-        #print(secret)
         
         return secret
 
    
-
-
-# print("\nRegex analizate correttamente:", perfect)
-# print("Problemi:", imperfect)
-
 excel_file_path = "Secret Regular Expression MYNE.xlsx"
 regex_df = pd.read_excel(excel_file_path, engine="openpyxl")
 
