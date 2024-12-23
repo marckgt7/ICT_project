@@ -115,7 +115,6 @@ def generate_secret(regex):
     if regex == "EMAIL A PIACERE":
        return "testuser.1005@example.com"
 
-
     # Trova il pre fisso
     match = re.search(r"\(\?:([a-zA-Z0-9|_.-]+)\)", regex) 
     if match:
@@ -137,12 +136,10 @@ def generate_secret(regex):
     
     if(prefisso == "https"): prefisso += '://'
 
-    # Trova il suffisso
     # Matching per suffissi tipo ".aha.io", ".jfrog.io" non chiusi tra [] o {}
-    suffix_match = re.findall(r'(\.[a-zA-Z0-9\-]+|@[a-zA-Z0-9\-]+)', regex)
-    if not suffix_match:
-        suffix_match = re.findall(r'(?:\b|\W)([a-zA-Z0-9\-]+)(?=\)\\b)', regex)
-
+    suffix_match = re.findall(r'(\.[a-zA-Z0-9]+|@[a-zA-Z0-9]+|tt\b|[ \r\n]{1}|-X)', regex)
+    if not suffix_match and "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJhcGkubGl2ZXN0b3JtLmNvIiwianRpIjoi" not in prefisso:
+        suffix_match = re.findall(r'(?:\b|\W)([a-zA-Z0-9]+)(?=\)\b)', regex)
 
     # Pattern per trovare i separatori (es. \. o \-)
     separator_pattern = r'\\(-4|[.=_|@\-])'  # Cattura -4 come entità e tutti gli altri separatori
@@ -152,15 +149,17 @@ def generate_secret(regex):
     matches = re.findall(separator_pattern, regex)
     all_separators.extend(matches)
 
+    if("eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJhcGkubGl2ZXN0b3JtLmNvIiwianRpIjoi" in prefisso):
+        suffix_match.remove(".eyJhdWQiOiJhcGkubGl2ZXN0b3JtLmNvIiwianRpIjoi")
+
     # Se suffix_match ha qualcosa, rimuove gli ultimi n elementi da all_separators
-    if suffix_match:
+    if suffix_match and ("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9" not in prefisso and "gocanvas" not in prefisso and "intercom" not in prefisso and "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJhcGkubGl2ZXN0b3JtLmNvIiwianRpIjoi" not in prefisso):
         n = len(suffix_match)
         all_separators = all_separators[:-n] if n <= len(all_separators) else []
-
+        
     if '=' in all_separators:
-        suffix_match.append('=')
+        suffix_match.insert(0, '=')
         all_separators.remove('=')
-    # Cerca charset e lunghezza
 
     # Trova tutte le coppie tra parentesi quadre e graffe
     matches = re.findall(r"\[([^\]]+)\]|\{([^\}]+)\}", regex)
@@ -171,9 +170,12 @@ def generate_secret(regex):
     
     if('-us' in regex):
         all_separators = ['-us']
+    
+    if(r'\b(-----BEGIN RSA PRIVATE KEY----- [A-Za-z0-9+] -----END RSA PRIVATE KEY-----)\b' in regex):
+        prefisso = "-----BEGIN RSA PRIVATE KEY----- "
+        suffix_match = " -----END RSA PRIVATE KEY-----"
 
     if matches:
-
         # Usa una lista per associare la lunghezza successiva a quelli vuoti
         coppie = [
             (x, y if y else (matches[i + 1][1] if i + 1 < len(matches) else 'None'))
@@ -229,8 +231,6 @@ def generate_secret(regex):
                     if (regex not in regex_no_separators):
                         secret += '-'
         
-        
-        
         if(suffix_match):
             for suffix in suffix_match:
                 secret += suffix
@@ -238,11 +238,11 @@ def generate_secret(regex):
         return secret
 
    
-excel_file_path = "Secret Regular Expression MYNE.xlsx"
+excel_file_path = "Secret Regular Expression ALL.xlsx"
 regex_df = pd.read_excel(excel_file_path, engine="openpyxl")
 
 # Directory dove salvare i dati generati
-output_dir = "generated_valid_secrets"
+output_dir = "Secrets"
 os.makedirs(output_dir, exist_ok=True)
 
 grouped_detectors = {}
@@ -266,7 +266,7 @@ for main_name, detectors in grouped_detectors.items():
         secret_type = full_name.split()[-1]
         try:
             # Tentativo di generare 10 segreti per ogni tipo
-            generated_secrets[secret_type] = [generate_secret(regex) for _ in range(10)]
+            generated_secrets[secret_type] = [generate_secret(regex) for _ in range(1)]
         except Exception as e:
             # Se si verifica un errore, stampa un messaggio di errore e passa al prossimo detector
             print(f"Errore durante la generazione dei segreti per {full_name}: {e}")
@@ -277,7 +277,7 @@ for main_name, detectors in grouped_detectors.items():
     all_secrets.append("-" * len(" | ".join(secret_types)))
 
     # Aggiungi i segreti generati, evitando i valori None
-    for i in range(10):
+    for i in range(1):
         row = [generated_secrets[secret_type][i] for secret_type in secret_types]
         # Rimuovi i valori None dalla riga
         row = [secret for secret in row if secret is not None]
@@ -287,7 +287,7 @@ for main_name, detectors in grouped_detectors.items():
             all_secrets.append(" | ".join(row))
 
     # Scrivi i segreti nel file
-    with open(os.path.join(output_dir, f"{sanitized_main_name}_valid_secrets.txt"), "w") as file:
+    with open(os.path.join(output_dir, f"{sanitized_main_name}_secrets.txt"), "w") as file:
         file.write("\n".join(all_secrets))
 
 print(f"Dataset generato con successo nella directory '{output_dir}'")
