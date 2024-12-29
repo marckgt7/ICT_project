@@ -20,49 +20,51 @@ def delete_files_in_folder(folder_path):
 commands = {
 
     #1: Scan a repo for only verified secrets
-    "docker run --rm -it -v "+"${"+"PWD}:/pwd"+" trufflesecurity/trufflehog git https://github.com/trufflesecurity/test_keys --only-verified": "repo.txt",
+    "./trufflehog-3.84.1/trufflehog.exe git https://github.com/marckgt7/ProvaTruffle": "prova_Secrets1_git.txt",
     
     #2: Scan a GitHub Org for only verified secrets
-    "docker run --rm -it -v "+"${"+"PWD}:/pwd"+" trufflesecurity/trufflehog github --org=trufflesecurity --only-verified": "git_org.txt",
+    "./trufflehog-3.84.1/trufflehog.exe github --repo=https://github.com/marckgt7/ProvaTruffle ": "prova_Secrets1_github.txt",
     
     #4: Scan a GitHub Repo + its Issues and Pull Requests
-    "docker run --rm -it -v "+"${"+"PWD}:/pwd"+" trufflesecurity/trufflehog github --repo https://github.com/trufflesecurity/test_keys --issue-comments --pr-comments": "repo_issues_prs.txt",
+    #"docker run --rm -it -v "+"${"+"PWD}:/pwd"+" trufflesecurity/trufflehog github --repo https://github.com/trufflesecurity/test_keys --issue-comments --pr-comments": "repo_issues_prs.txt",
     
     #5: Scan an S3 bucket for verified keys
-    "docker run --rm -it -v "+"${"+"PWD}:/pwd"+" trufflesecurity/trufflehog s3 --bucket=<bucket name> --only-verified": "s3.txt",
+    #"docker run --rm -it -v "+"${"+"PWD}:/pwd"+" trufflesecurity/trufflehog s3 --bucket=<bucket name> --only-verified": "s3.txt",
     
     #6: Scan S3 buckets using IAM Roles
-    "docker run --rm -it -v "+"${"+"PWD}:/pwd"+" trufflesecurity/trufflehog s3 --role-arn=<iam role arn>": "s3_iam_roles.txt",
+    #"docker run --rm -it -v "+"${"+"PWD}:/pwd"+" trufflesecurity/trufflehog s3 --role-arn=<iam role arn>": "s3_iam_roles.txt",
     
     #7: Scan a Github Repo using SSH authentication in docker
-    "docker run --rm -it -v "+"${"+"PWD}:/pwd"+" -v $HOME/.ssh:/root/.ssh:ro trufflesecurity/trufflehog:latest git ssh://github.com/trufflesecurity/test_keys": "repo_ssh.txt",
+    #"docker run --rm -it -v "+"${"+"PWD}:/pwd"+" -v $HOME/.ssh:/root/.ssh:ro trufflesecurity/trufflehog:latest git ssh://github.com/trufflesecurity/test_keys": "repo_ssh.txt",
     
     #8: Scan individual files or directories
-    "docker run --rm -it -v "+"${"+"PWD}:/pwd"+" trufflesecurity/trufflehog filesystem path/to/file1.txt path/to/file2.txt path/to/dir": "files.txt",
-    
+    "./trufflehog-3.84.1/trufflehog.exe filesystem Secrets1/": "prova_Secrets1_filesystem.txt",
+
+    "./trufflehog-3.84.1/trufflehog.exe filesystem Secrets10/": "prova_Secrets10_filesystem.txt",
+
     #9: Scan GCS buckets for verified secrets
-    "docker run --rm -it -v "+"${"+"PWD}:/pwd"+" trufflesecurity/trufflehog gcs --project-id=<project-ID> --cloud-environment --only-verified": "gcs.txt",
+    #"docker run --rm -it -v "+"${"+"PWD}:/pwd"+" trufflesecurity/trufflehog gcs --project-id=<project-ID> --cloud-environment --only-verified": "gcs.txt",
     
     #10: Scan a Docker image for verified secrets
-    "docker run --rm -it -v "+"${"+"PWD}:/pwd"+" trufflesecurity/trufflehog docker --image trufflesecurity/secrets --only-verified": "docker_image.txt",
+    "./trufflehog-3.84.1/trufflehog.exe docker --image localhost:5000/ict_project_image": "prova_Secrets1_docker.txt",
     
     #11: Scan in CI
-    "docker run --rm -it -v "+"${"+"PWD}:/pwd"+" trufflesecurity/trufflehog git file://. --since-commit main --branch feature-1 --only-verified --fail": "CI.txt",
+    #"docker run --rm -it -v "+"${"+"PWD}:/pwd"+" trufflesecurity/trufflehog git file://. --since-commit main --branch feature-1 --only-verified --fail": "CI.txt",
     
     #12: Scan a Postman workspace
-    "docker run --rm -it -v "+"${"+"PWD}:/pwd"+" trufflesecurity/trufflehog postman --token=<postman api token> --workspace-id=<workspace id>": "postman.txt",
+    #"docker run --rm -it -v "+"${"+"PWD}:/pwd"+" trufflesecurity/trufflehog postman --token=<postman api token> --workspace-id=<workspace id>": "postman.txt",
     
     #13: Scan a Jenkins server
-    "docker run --rm -it -v "+"${"+"PWD}:/pwd"+" trufflesecurity/trufflehog jenkins --url https://jenkins.example.com --username admin --password admin": "jenkins.txt",
+    #"docker run --rm -it -v "+"${"+"PWD}:/pwd"+" trufflesecurity/trufflehog jenkins --url https://jenkins.example.com --username admin --password admin": "jenkins.txt",
     
     #14: Scan an Elasticsearch server
-    "docker run --rm -it -v "+"${"+"PWD}:/pwd"+" trufflesecurity/trufflehog elasticsearch --nodes 192.168.14.3 192.168.14.4 --username truffle --password hog": "elastic.txt",
+    #"docker run --rm -it -v "+"${"+"PWD}:/pwd"+" trufflesecurity/trufflehog elasticsearch --nodes 192.168.14.3 192.168.14.4 --username truffle --password hog": "elastic.txt",
     
     #15: Scan a GitHub Repository for Cross Fork Object References and Deleted Commits
-    "docker run --rm -it -v "+"${"+"PWD}:/pwd"+" trufflesecurity/trufflehog github-experimental --repo https://github.com/<USER>/<REPO>.git --object-discovery": "cfordc.txt",
+    #"docker run --rm -it -v "+"${"+"PWD}:/pwd"+" trufflesecurity/trufflehog github-experimental --repo https://github.com/<USER>/<REPO>.git --object-discovery": "cfordc.txt",
     
     #16: Scan Hugging Face
-    "docker run --rm -it -v "+"${"+"PWD}:/pwd"+" trufflesecurity/trufflehog huggingface --model <model_id> --include-discussions --include-prs": "hugging.txt"
+    #"docker run --rm -it -v "+"${"+"PWD}:/pwd"+" trufflesecurity/trufflehog huggingface --model <model_id> --include-discussions --include-prs": "hugging.txt"
 
 }
 
