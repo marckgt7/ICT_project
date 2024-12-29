@@ -11,7 +11,9 @@ regex_no_separators = [r'(?i)(?:float)(?:.|[\n\r]){0,40}\b([a-f0-9]{16}[A-Za-z0-
                        r'\b([a-z]{2}[0-9]{9})\b',
                        r'(?i)(?:front)(?:.|[\n\r]){0,40}\b([0-9a-zA-Z]{36}\.[0-9a-zA-Z.-_]{188,244})\b',
                        r'(?i)(?:image4)(?:.|[\n\r]){0,40}\b([0-9a-zA-Z]{22}[0-9a-zA-Z=]{2})',
-                       r'(?i)(?:instabot)(?:.|[\n\r]){0,40}\b([0-9a-zA-Z=+\/]{43}[0-9a-zA-Z+\/=]{1})']
+                       r'(?i)(?:instabot)(?:.|[\n\r]){0,40}\b([0-9a-zA-Z=+\/]{43}[0-9a-zA-Z+\/=]{1})',
+                       r'(?i)(?:instabot)(?:.|[\n\r]){0,40}\b([0-9a-zA-Z=+\/]{43}[0-9a-zA-Z+\/=]{1})',
+                       r'(?i)(?:instabot)(?:.|[\n\r]){0,40}\b([0-9a-zA-Z=+]{43}[0-9a-zA-Z+=]{1})']
 
 def aggiungi_regex_in_excel(file_excel, regex):
     try:
@@ -214,7 +216,6 @@ def generate_secret(regex):
                 secret += ''
             else:
                 charsets.append(coppia)
-
         for i, charset in enumerate(charsets):
             random_variable_part = generate_random_string(charset[0], charset[1])
 
@@ -238,11 +239,11 @@ def generate_secret(regex):
         return secret
 
    
-excel_file_path = "Secret Regular Expression ALL.xlsx"
+excel_file_path = "Secret Regular Expression A-M.xlsx"
 regex_df = pd.read_excel(excel_file_path, engine="openpyxl")
 
 # Directory dove salvare i dati generati
-output_dir = "Secrets"
+output_dir = "Secrets10"
 os.makedirs(output_dir, exist_ok=True)
 
 grouped_detectors = {}
@@ -266,7 +267,7 @@ for main_name, detectors in grouped_detectors.items():
         secret_type = full_name.split()[-1]
         try:
             # Tentativo di generare 10 segreti per ogni tipo
-            generated_secrets[secret_type] = [generate_secret(regex) for _ in range(1)]
+            generated_secrets[secret_type] = [generate_secret(regex) for _ in range(10)]
         except Exception as e:
             # Se si verifica un errore, stampa un messaggio di errore e passa al prossimo detector
             print(f"Errore durante la generazione dei segreti per {full_name}: {e}")
@@ -277,7 +278,7 @@ for main_name, detectors in grouped_detectors.items():
     all_secrets.append("-" * len(" | ".join(secret_types)))
 
     # Aggiungi i segreti generati, evitando i valori None
-    for i in range(1):
+    for i in range(10):
         row = [generated_secrets[secret_type][i] for secret_type in secret_types]
         # Rimuovi i valori None dalla riga
         row = [secret for secret in row if secret is not None]
