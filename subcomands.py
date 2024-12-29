@@ -93,8 +93,7 @@ def run_command(command, output_file):
 
 
 # Esegui i comandi contemporaneamente
-# Ensure the 'results' directory exists
-results_dir = "results"
+results_dir = "output"
 os.makedirs(results_dir, exist_ok=True)
 delete_files_in_folder(os.path.join(results_dir))
 
