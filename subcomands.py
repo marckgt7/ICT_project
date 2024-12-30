@@ -38,9 +38,9 @@ commands = {
     #"docker run --rm -it -v "+"${"+"PWD}:/pwd"+" -v $HOME/.ssh:/root/.ssh:ro trufflesecurity/trufflehog:latest git ssh://github.com/trufflesecurity/test_keys": "repo_ssh.txt",
     
     #8: Scan individual files or directories
-    "./trufflehog-3.84.1/trufflehog.exe filesystem Secrets1/": "prova_Secrets1_filesystem.txt",
+    #"./trufflehog-3.84.1/trufflehog.exe filesystem Secrets1/": "prova_Secrets1_filesystem.txt",
 
-    "./trufflehog-3.84.1/trufflehog.exe filesystem Secrets10/": "prova_Secrets10_filesystem.txt",
+    #"./trufflehog-3.84.1/trufflehog.exe filesystem Secrets10/": "prova_Secrets10_filesystem.txt",
 
     #9: Scan GCS buckets for verified secrets
     #"docker run --rm -it -v "+"${"+"PWD}:/pwd"+" trufflesecurity/trufflehog gcs --project-id=<project-ID> --cloud-environment --only-verified": "gcs.txt",
@@ -95,7 +95,7 @@ def run_command(command, output_file):
 # Esegui i comandi contemporaneamente
 results_dir = "output"
 os.makedirs(results_dir, exist_ok=True)
-delete_files_in_folder(os.path.join(results_dir))
+#delete_files_in_folder(os.path.join(results_dir))
 
 with ThreadPoolExecutor() as executor:
     for command, output_file in commands.items():
