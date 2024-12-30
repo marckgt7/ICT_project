@@ -20,10 +20,10 @@ def delete_files_in_folder(folder_path):
 commands = {
 
     #1: Scan a repo for only verified secrets
-    "./trufflehog-3.84.1/trufflehog.exe git https://github.com/marckgt7/ProvaTruffle": "prova_Secrets1_git.txt",
+    #"./trufflehog-3.84.1/trufflehog.exe git https://github.com/marckgt7/ProvaTruffle": "prova_Secrets1_git.txt",
     
     #2: Scan a GitHub Org for only verified secrets
-    "./trufflehog-3.84.1/trufflehog.exe github --repo=https://github.com/marckgt7/ProvaTruffle ": "prova_Secrets1_github.txt",
+    #"./trufflehog-3.84.1/trufflehog.exe github --repo=https://github.com/marckgt7/ProvaTruffle ": "prova_Secrets1_github.txt",
     
     #4: Scan a GitHub Repo + its Issues and Pull Requests
     #"docker run --rm -it -v "+"${"+"PWD}:/pwd"+" trufflesecurity/trufflehog github --repo https://github.com/trufflesecurity/test_keys --issue-comments --pr-comments": "repo_issues_prs.txt",
@@ -39,14 +39,18 @@ commands = {
     
     #8: Scan individual files or directories
     #"./trufflehog-3.84.1/trufflehog.exe filesystem Secrets1/": "prova_Secrets1_filesystem.txt",
+    #"./trufflehog-3.84.1/trufflehog.exe filesystem FakeSecrets1/": "prova_Secrets1_filesystem_fake.txt",
+
 
     #"./trufflehog-3.84.1/trufflehog.exe filesystem Secrets10/": "prova_Secrets10_filesystem.txt",
+    "./trufflehog-3.84.1/trufflehog.exe filesystem FakeSecrets10/": "prova_Secrets10_filesystem_fake.txt",
+
 
     #9: Scan GCS buckets for verified secrets
     #"docker run --rm -it -v "+"${"+"PWD}:/pwd"+" trufflesecurity/trufflehog gcs --project-id=<project-ID> --cloud-environment --only-verified": "gcs.txt",
     
     #10: Scan a Docker image for verified secrets
-    "./trufflehog-3.84.1/trufflehog.exe docker --image localhost:5000/ict_project_image": "prova_Secrets1_docker.txt",
+   # "./trufflehog-3.84.1/trufflehog.exe docker --image localhost:5000/ict_project_image": "prova_Secrets1_docker.txt",
     
     #11: Scan in CI
     #"docker run --rm -it -v "+"${"+"PWD}:/pwd"+" trufflesecurity/trufflehog git file://. --since-commit main --branch feature-1 --only-verified --fail": "CI.txt",

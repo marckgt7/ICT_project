@@ -81,7 +81,7 @@ def plot_confusion_matrix(tp, fp, fn):
     plt.show()
 
 # Run analysis
-results_file = 'results.txt'
+results_file = 'results/prova_Secrets1_filesystem.txt'
 additional_fn_detectors = []  # Replace with user input if necessary
 tp, fp, fn = analyze_detectors(results_file, additional_fn_detectors)
 plot_confusion_matrix(tp, fp, fn)

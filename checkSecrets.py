@@ -59,6 +59,9 @@ file_path_array = [ 'output/prova_Secrets1_docker.txt',
                     'output/prova_Secrets1_git.txt',
                     'output/prova_Secrets1_github.txt',
                     'output/prova_Secrets10_filesystem.txt',
+                    'output/prova_Secrets1_filesystem_fake.txt',
+                    'output/prova_Secrets10_filesystem_fake.txt'
+
                     ]
 excel_file_path = "Secret Regular Expression FILTERED.xlsx"  # Percorso del file Excel
 results_dir = "results"

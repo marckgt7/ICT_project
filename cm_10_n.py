@@ -38,13 +38,12 @@ def analyze_detectors(results_file, additional_fn_detectors):
         if secrets == 10:
             results[detector]['TP'] += 10  # All 10 are true positives
         elif secrets > 10:
-            results[detector]['TP'] += 10  # First 10 are true positives
-            results[detector]['FP'] += secrets - 10  # The rest are false positives
+            results[detector]['FP'] += secrets  # All are false positives
         elif secrets < 10:
-            results[detector]['TP'] += secrets  # Found secrets are true positives
+            results[detector]['FP'] += secrets  # The found secrets are false positives
             results[detector]['FN'] += 10 - secrets  # The rest are false negatives
 
-    # Mark missing detectors as False Negatives
+    # Mark missing detectors as False Negatives (10 FN each)
     missing_detectors = [f"Detector_{i+1}" for i in range(missing_detectors_count)]
     for detector in missing_detectors:
         results[detector]['FN'] += 10  # Entirely missed detector is 10 false negatives
@@ -81,7 +80,7 @@ def plot_confusion_matrix(tp, fp, fn):
     plt.show()
 
 # Run analysis
-results_file = 'results.txt'
+results_file = 'results/prova_Secrets1_filesystem_fake.txt'
 additional_fn_detectors = []  # Replace with user input if necessary
 tp, fp, fn = analyze_detectors(results_file, additional_fn_detectors)
 plot_confusion_matrix(tp, fp, fn)

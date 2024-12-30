@@ -134,11 +134,11 @@ def generate_secret(regex):
         return secret
 
    
-excel_file_path = "Secret Regular Expression A-M.xlsx"
+excel_file_path = "Secret Regular Expression FILTERED.xlsx"
 regex_df = pd.read_excel(excel_file_path, engine="openpyxl")
 
 # Directory dove salvare i dati generati
-output_dir = "FakeSecrets"
+output_dir = "FakeSecrets10"
 os.makedirs(output_dir, exist_ok=True)
 
 grouped_detectors = {}
@@ -162,7 +162,7 @@ for main_name, detectors in grouped_detectors.items():
         secret_type = full_name.split()[-1]
         try:
             # Tentativo di generare 10 segreti per ogni tipo
-            generated_secrets[secret_type] = [generate_secret(regex) for _ in range(1)]
+            generated_secrets[secret_type] = [generate_secret(regex) for _ in range(10)]
         except Exception as e:
             # Se si verifica un errore, stampa un messaggio di errore e passa al prossimo detector
             print(f"Errore durante la generazione dei segreti per {full_name}: {e}")
@@ -173,7 +173,7 @@ for main_name, detectors in grouped_detectors.items():
     all_secrets.append("-" * len(" | ".join(secret_types)))
 
     # Aggiungi i segreti generati, evitando i valori None
-    for i in range(1):
+    for i in range(10):
         row = [generated_secrets[secret_type][i] for secret_type in secret_types]
         # Rimuovi i valori None dalla riga
         row = [secret for secret in row if secret is not None]
