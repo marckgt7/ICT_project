@@ -38,11 +38,11 @@ commands = {
     #"docker run --rm -it -v "+"${"+"PWD}:/pwd"+" -v $HOME/.ssh:/root/.ssh:ro trufflesecurity/trufflehog:latest git ssh://github.com/trufflesecurity/test_keys": "repo_ssh.txt",
     
     #8: Scan individual files or directories
-    #"./trufflehog-3.84.1/trufflehog.exe filesystem Secrets1/": "prova_Secrets1_filesystem.txt",
-    #"./trufflehog-3.84.1/trufflehog.exe filesystem FakeSecrets1/": "prova_Secrets1_filesystem_fake.txt",
+    "./trufflehog-3.84.1/trufflehog.exe filesystem Secrets1/": "prova_Secrets1_filesystem.txt",
+    "./trufflehog-3.84.1/trufflehog.exe filesystem FakeSecrets1/": "prova_Secrets1_filesystem_fake.txt",
 
 
-    #"./trufflehog-3.84.1/trufflehog.exe filesystem Secrets10/": "prova_Secrets10_filesystem.txt",
+    "./trufflehog-3.84.1/trufflehog.exe filesystem Secrets10/": "prova_Secrets10_filesystem.txt",
     "./trufflehog-3.84.1/trufflehog.exe filesystem FakeSecrets10/": "prova_Secrets10_filesystem_fake.txt",
 
 
