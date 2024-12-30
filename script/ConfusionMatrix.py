@@ -146,7 +146,7 @@ def save_confusion_matrix(tp, fp, fn, accuracy, precision, recall, fscore, outpu
 
 
 # Process all files in the results folder
-results_folder = './results'
+results_folder = './checkSecretsResults'
 additional_fn_detectors = []  # Replace with user input if necessary
 
 # Loop through files in the 'results' folder

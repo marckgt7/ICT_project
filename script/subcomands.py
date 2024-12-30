@@ -97,7 +97,7 @@ def run_command(command, output_file):
 
 
 # Esegui i comandi contemporaneamente
-results_dir = "./output"
+results_dir = "./TruffleOutput"
 os.makedirs(results_dir, exist_ok=True)
 #delete_files_in_folder(os.path.join(results_dir))
 

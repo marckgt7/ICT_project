@@ -63,7 +63,7 @@ file_path_array = [ './output/prova_Secrets1_docker.txt',
                     './output/prova_Secrets10_filesystem_fake.txt'
                     ]
 excel_file_path = "./data/Secret Regular Expression FILTERED.xlsx"  # Percorso del file Excel
-results_dir = "./results"
+results_dir = "./checkSecretsResults"
 os.makedirs(results_dir, exist_ok=True)
 delete_files_in_folder(os.path.join(results_dir))
 
