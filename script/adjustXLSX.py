@@ -20,11 +20,11 @@ def find_variable_after_keypat(file_content):
     return None, None
 
 # Percorso del file Excel
-excel_file_path = "Secret Regular Expression.xlsx"
+excel_file_path = "./Secret Regular Expression.xlsx"
 regex_df = pd.read_excel(excel_file_path, engine="openpyxl")
 
 # Percorso dei detector
-detectors_path = 'trufflehog-3.84.1/pkg/detectors/'
+detectors_path = './trufflehog-3.84.1/pkg/detectors/'
 
 # Modifica dei file detector e aggiorna il DataFrame
 new_rows = []

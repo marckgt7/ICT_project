@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from collections import defaultdict
 
 # Ensure the 'plot' folder exists
-plot_folder = 'plot'
+plot_folder = './plot'
 os.makedirs(plot_folder, exist_ok=True)
 
 # Function to analyze detectors based on the extracted numero
@@ -146,7 +146,7 @@ def save_confusion_matrix(tp, fp, fn, accuracy, precision, recall, fscore, outpu
 
 
 # Process all files in the results folder
-results_folder = 'results'
+results_folder = './results'
 additional_fn_detectors = []  # Replace with user input if necessary
 
 # Loop through files in the 'results' folder
