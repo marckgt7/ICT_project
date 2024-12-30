@@ -239,7 +239,7 @@ def generate_secret(regex):
         return secret
 
    
-excel_file_path = "./Secret Regular Expression FILTERED.xlsx"
+excel_file_path = "./data/Secret Regular Expression FILTERED.xlsx"
 regex_df = pd.read_excel(excel_file_path, engine="openpyxl")
 
 # Directory dove salvare i dati generati
