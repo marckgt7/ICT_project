@@ -84,8 +84,8 @@ def analyze_detectors(results_file, numero, additional_fn_detectors):
 
 
     # Calculate metrics
-    total_predictions = tp + fp + fn
-    accuracy = tp / total_predictions if total_predictions > 0 else 0
+    total_predictions = tp + fp + fn + tn
+    accuracy = (tp+tn) / total_predictions if total_predictions > 0 else 0
     precision = tp / (tp + fp) if (tp + fp) > 0 else 0
     recall = tp / (tp + fn) if (tp + fn) > 0 else 0
     fscore = 2 * (precision * recall) / (precision + recall) if (precision + recall) > 0 else 0
