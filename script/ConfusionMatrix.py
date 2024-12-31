@@ -35,7 +35,7 @@ def analyze_detectors(results_file, numero, additional_fn_detectors):
     df = pd.DataFrame(data, columns=['Detector', 'SecretsFound'])
 
     # Initialize results
-    results = defaultdict(lambda: {'TP': 0, 'FP': 0, 'FN': 0})
+    results = defaultdict(lambda: {'TP': 0, 'FP': 0, 'FN': 0,'TN':0})
 
     # Analyze detectors based on 'numero' (different logic for fake files)
     if 'fake' in results_file:
@@ -43,12 +43,16 @@ def analyze_detectors(results_file, numero, additional_fn_detectors):
             detector, secrets = row['Detector'], row['SecretsFound']
 
             if secrets == numero:
-                results[detector]['TP'] += numero  # All secrets are true positives
+                results[detector]['FP'] += numero  # All secrets are true negatives
             elif secrets > numero:
                 results[detector]['FP'] += secrets  # All are false positives
             elif secrets < numero:
                 results[detector]['FP'] += secrets  # Found secrets are false positives
                 results[detector]['FN'] += numero - secrets  # The rest are false negatives
+                        # Mark missing detectors as False Negatives
+        missing_detectors = [f"Detector_{i+1}" for i in range(missing_detectors_count)]
+        for detector in missing_detectors:
+            results[detector]['TN'] += numero  # Entirely missed detector is 10 false negatives
     else:
         # Regular logic for non-fake files
         for _, row in df.iterrows():
@@ -63,10 +67,10 @@ def analyze_detectors(results_file, numero, additional_fn_detectors):
                 results[detector]['TP'] += secrets  # Found secrets are true positives
                 results[detector]['FN'] += numero - secrets  # Rest are false negatives
 
-    # Mark missing detectors as False Negatives
-    missing_detectors = [f"Detector_{i+1}" for i in range(missing_detectors_count)]
-    for detector in missing_detectors:
-        results[detector]['FN'] += numero  # Entirely missed detector is 10 false negatives
+        # Mark missing detectors as False Negatives
+        missing_detectors = [f"Detector_{i+1}" for i in range(missing_detectors_count)]
+        for detector in missing_detectors:
+            results[detector]['FN'] += numero  # Entirely missed detector is 10 false negatives
 
     # Add additional FN detectors
     for detector in additional_fn_detectors:
@@ -76,6 +80,8 @@ def analyze_detectors(results_file, numero, additional_fn_detectors):
     tp = sum(r['TP'] for r in results.values())
     fp = sum(r['FP'] for r in results.values())
     fn = sum(r['FN'] for r in results.values())
+    tn = sum(r['TN'] for r in results.values())
+
 
     # Calculate metrics
     total_predictions = tp + fp + fn
@@ -84,14 +90,14 @@ def analyze_detectors(results_file, numero, additional_fn_detectors):
     recall = tp / (tp + fn) if (tp + fn) > 0 else 0
     fscore = 2 * (precision * recall) / (precision + recall) if (precision + recall) > 0 else 0
 
-    return tp, fp, fn, accuracy, precision, recall, fscore
+    return tp, fp, fn,tn, accuracy, precision, recall, fscore
 
-def save_confusion_matrix(tp, fp, fn, accuracy, precision, recall, fscore, output_path):
+def save_confusion_matrix(tp, fp, fn,tn, accuracy, precision, recall, fscore, output_path):
     # Plot matrix
     fig, ax = plt.subplots(1, 2, figsize=(5, 3))
 
     # Confusion matrix setup
-    confusion_matrix = np.array([[tp, fp], [fn, 0]])
+    confusion_matrix = np.array([[tp, fp], [fn, tn]])
     labels = [['TP', 'FP'], ['FN', 'TN']]
 
     # Custom colormap for smoother pastel look
@@ -116,8 +122,8 @@ def save_confusion_matrix(tp, fp, fn, accuracy, precision, recall, fscore, outpu
         spine.set_linewidth(0.3)  # Set a thinner border (you can adjust the value)
 
     # Metrics pie chart
-    counts = [tp, fp, fn]
-    labels_pie = ['True Positives', 'False Positives', 'False Negatives']
+    counts = [tp, fp, fn,tn]
+    labels_pie = ['True Positives', 'False Positives', 'False Negatives','True Negatives']
     colors_pie = [
             cmap(0.3),  # Greenish (near the start of the colormap)
             cmap(0.1),   # Blueish (midway through the colormap)
@@ -161,7 +167,7 @@ for file_name in os.listdir(results_folder):
             file_path = os.path.join(results_folder, file_name)
 
             # Analyze detectors for the current file
-            tp, fp, fn, accuracy, precision, recall, fscore = analyze_detectors(file_path, numero, additional_fn_detectors)
+            tp, fp, fn,tn, accuracy, precision, recall, fscore = analyze_detectors(file_path, numero, additional_fn_detectors)
 
             # Generate plot path
             output_file_name = file_name.replace('prova', 'plot').replace('.txt', '.png')
@@ -169,4 +175,4 @@ for file_name in os.listdir(results_folder):
 
             # Save the confusion matrix for the current file
             print(f"Saving plot for {file_name} to {output_path}")
-            save_confusion_matrix(tp, fp, fn, accuracy, precision, recall, fscore, output_path)
+            save_confusion_matrix(tp, fp, fn,tn, accuracy, precision, recall, fscore, output_path)
