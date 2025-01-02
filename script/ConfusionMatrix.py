@@ -11,6 +11,7 @@ os.makedirs(plot_folder, exist_ok=True)
 # Function to analyze detectors based on the extracted numero
 def analyze_detectors(results_file, numero, additional_fn_detectors):
     # Read the results file and preprocess
+    expected_detector = 6650 if "10" in results_file else 665
     data = []
     missing_detectors_count = 0
     with open(results_file, 'r') as file:
@@ -37,7 +38,6 @@ def analyze_detectors(results_file, numero, additional_fn_detectors):
     # Initialize results
     results = defaultdict(lambda: {'TP': 0, 'FP': 0, 'FN': 0,'TN':0})
 
-    # Analyze detectors based on 'numero' (different logic for fake files)
     if 'fake' in results_file:
         for _, row in df.iterrows():
             detector, secrets = row['Detector'], row['SecretsFound']
@@ -82,7 +82,15 @@ def analyze_detectors(results_file, numero, additional_fn_detectors):
     fn = sum(r['FN'] for r in results.values())
     tn = sum(r['TN'] for r in results.values())
 
+    if "unico" in results_file:
+        print(expected_detector)
+        new_fn =  expected_detector - tp
+        fp += fn - new_fn
+        fn = new_fn
+    
 
+
+    print(missing_detectors_count)
     # Calculate metrics
     total_predictions = tp + fp + fn + tn
     accuracy = (tp+tn) / total_predictions if total_predictions > 0 else 0

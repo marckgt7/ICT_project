@@ -32,7 +32,8 @@ def count_unique_detectors_and_secrets(file_path):
             detector_match = re.search(r'Detector Type: (\w+)', block)
             raw_result_match = re.search(r'Raw result: ([^\n]+)', block)
             file_match = re.search(r'File: .*[/\\](\w+)_secrets\.txt', block)
-            if("postman" not in file_path):
+
+            if("unico" not in file_path):
 
                 if detector_match and raw_result_match and file_match:
                     detector_type = detector_match.group(1)
@@ -53,7 +54,7 @@ def count_unique_detectors_and_secrets(file_path):
                     detector_normalized = detector_type.strip().lower()
                     secrets.append((detector_normalized, None, raw_result))
         df_unique = pd.DataFrame(secrets, columns=['Detector', 'File', 'Secret'])
-        if "postman" not in file_path:
+        if "unico" not in file_path:
             df_unique = df_unique.drop_duplicates(subset=['File', 'Secret'])
         else: df_unique = df_unique.drop_duplicates(subset=['Detector', 'Secret'])
         return df_unique
@@ -69,8 +70,11 @@ file_path_array = [ './TruffleOutput/prova_Secrets1_docker.txt',
                     './TruffleOutput/prova_Secrets1_github.txt',
                     #'./TruffleOutput/prova_Secrets10_postman.txt',
                     './TruffleOutput/prova_Secrets10_filesystem.txt',
-                    './TruffleOutput/prova_Secrets1_filesystem_fake.txt',
-                    './TruffleOutput/prova_Secrets10_filesystem_fake.txt',
+                    './TruffleOutput/prova_Secrets1_filesystem_unico.txt',
+                    './TruffleOutput/prova_Secrets10_filesystem_unico.txt',
+
+                    #'./TruffleOutput/prova_Secrets1_filesystem_fake.txt',
+                    #'./TruffleOutput/prova_Secrets10_filesystem_fake.txt',
                     ]
 excel_file_path = "./data/Secret Regular Expression FILTERED.xlsx"  # Percorso del file Excel
 results_dir = "./checkSecretsResults"
@@ -87,7 +91,7 @@ for file_path in file_path_array:
     detectors_found.to_excel(output_file, index=False)  # index=False evita di salvare l'indice del DataFrame
     # Leggi il file Excel per ottenere l'elenco dei detector attesi
     try:
-        if('postman' in file_path):
+        if('unico' in file_path):
             column = 'Detector'
             excel_file_path = 'detector_missing.xlsx'
             regex_df = pd.read_excel(excel_file_path)

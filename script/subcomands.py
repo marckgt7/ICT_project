@@ -33,11 +33,11 @@ commands = {
     #"./trufflehog-3.84.1/trufflehog.exe filesystem data/Secrets10/": "prova_Secrets10_filesystem.txt",
     #"./trufflehog-3.84.1/trufflehog.exe filesystem data/FakeSecrets10/": "prova_Secrets10_filesystem_fake.txt",
 
-    "./trufflehog-3.84.1/trufflehog.exe filesystem data/Secrets100/": "prova_Secrets100_filesystem.txt",
-    #"./trufflehog-3.84.1/trufflehog.exe filesystem data/FakeSecrets100/": "prova_Secrets100_filesystem_fake.txt"
+    "./trufflehog-3.84.1/trufflehog.exe filesystem data/Secrets1.txt": "prova_Secrets1_filesystem_unico_p.txt",
+    "./trufflehog-3.84.1/trufflehog.exe filesystem data/Secrets10.txt": "prova_Secrets10_filesystem_unico_p.txt",
 
     #10: Scan a Docker image for verified secrets
-    "./trufflehog-3.84.1/trufflehog.exe docker --image localhost:5000/ict_project_image": "prova_Secrets1_docker.txt"
+    #"./trufflehog-3.84.1/trufflehog.exe docker --image localhost:5000/ict_project_image": "prova_Secrets1_docker.txt"
     
     #11: Scan in CI
     #"docker run --rm -it -v "+"${"+"PWD}:/pwd"+" trufflesecurity/trufflehog git file://. --since-commit main --branch feature-1 --only-verified --fail": "CI.txt",
