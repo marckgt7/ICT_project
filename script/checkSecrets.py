@@ -32,21 +32,30 @@ def count_unique_detectors_and_secrets(file_path):
             detector_match = re.search(r'Detector Type: (\w+)', block)
             raw_result_match = re.search(r'Raw result: ([^\n]+)', block)
             file_match = re.search(r'File: .*[/\\](\w+)_secrets\.txt', block)
+            if("postman" not in file_path):
 
-            if detector_match and raw_result_match and file_match:
-                detector_type = detector_match.group(1)
-                raw_result = raw_result_match.group(1)
-                file_name = file_match.group(1)
-                
-                detector_normalized = detector_type.strip().lower()
-                file_name_normalized = file_name.strip().lower()
-                secrets.append((detector_normalized, file_name_normalized, raw_result))
+                if detector_match and raw_result_match and file_match:
+                    detector_type = detector_match.group(1)
+                    raw_result = raw_result_match.group(1)
+                    file_name = file_match.group(1)
+                    
+                    detector_normalized = detector_type.strip().lower()
+                    file_name_normalized = file_name.strip().lower()
+                    secrets.append((detector_normalized, file_name_normalized, raw_result))
+                else:
+                    print(detector_match)
+                    print(raw_result_match)
+                    print(file_match)
             else:
-                print(detector_match)
-                print(raw_result_match)
-                print(file_match)
-        df = pd.DataFrame(secrets, columns=['Detector', 'File', 'Secret'])
-        df_unique = df.drop_duplicates(subset=['File', 'Secret'])
+                    detector_type = detector_match.group(1)
+                    raw_result = raw_result_match.group(1)
+                    
+                    detector_normalized = detector_type.strip().lower()
+                    secrets.append((detector_normalized, None, raw_result))
+        df_unique = pd.DataFrame(secrets, columns=['Detector', 'File', 'Secret'])
+        if "postman" not in file_path:
+            df_unique = df_unique.drop_duplicates(subset=['File', 'Secret'])
+        else: df_unique = df_unique.drop_duplicates(subset=['Detector', 'Secret'])
         return df_unique
 
     except UnicodeDecodeError:
@@ -54,18 +63,21 @@ def count_unique_detectors_and_secrets(file_path):
         return 0, {}, pd.DataFrame()
 
 # Percorso del file di input
-file_path_array = [ './output/prova_Secrets1_docker.txt',
-                    './output/prova_Secrets1_filesystem.txt',
-                    './output/prova_Secrets1_git.txt',
-                    './output/prova_Secrets1_github.txt',
-                    './output/prova_Secrets10_filesystem.txt',
-                    './output/prova_Secrets1_filesystem_fake.txt',
-                    './output/prova_Secrets10_filesystem_fake.txt'
+file_path_array = [ './TruffleOutput/prova_Secrets1_docker.txt',
+                    './TruffleOutput/prova_Secrets1_filesystem.txt',
+                    './TruffleOutput/prova_Secrets1_git.txt',
+                    './TruffleOutput/prova_Secrets1_github.txt',
+                    #'./TruffleOutput/prova_Secrets10_postman.txt',
+                    './TruffleOutput/prova_Secrets10_filesystem.txt',
+                    './TruffleOutput/prova_Secrets1_filesystem_fake.txt',
+                    './TruffleOutput/prova_Secrets10_filesystem_fake.txt',
                     ]
 excel_file_path = "./data/Secret Regular Expression FILTERED.xlsx"  # Percorso del file Excel
 results_dir = "./checkSecretsResults"
 os.makedirs(results_dir, exist_ok=True)
-delete_files_in_folder(os.path.join(results_dir))
+#delete_files_in_folder(os.path.join(results_dir))
+column = 'File'
+
 
 for file_path in file_path_array:
     # Esegui il conteggio dei detector e dei segreti
@@ -75,12 +87,19 @@ for file_path in file_path_array:
     detectors_found.to_excel(output_file, index=False)  # index=False evita di salvare l'indice del DataFrame
     # Leggi il file Excel per ottenere l'elenco dei detector attesi
     try:
-        regex_df = pd.read_excel(excel_file_path)
-
-        # Rimuovi i duplicati nella colonna 'Secret Type' (prendendo solo la prima parola e rendendola minuscola)
-        regex_df['Detector'] = regex_df['Secret Type'].apply(lambda x: x.split()[0].strip().lower())
-        regex_df = regex_df.drop(columns=['Secret Type', 'Source', 'Pattern_ID', 'Regular Expression', 'Unnamed: 4'], axis=1)
-        expected_detectors = regex_df.drop_duplicates(subset=['Detector'])
+        if('postman' in file_path):
+            column = 'Detector'
+            excel_file_path = 'detector_missing.xlsx'
+            regex_df = pd.read_excel(excel_file_path)
+            regex_df = regex_df.drop(columns=['Detector', 'Secret'], axis=1)
+            regex_df.rename(columns={'File': 'Detector'}, inplace=True)
+            expected_detectors = regex_df.drop_duplicates(subset=['Detector'])
+        else:
+            regex_df = pd.read_excel(excel_file_path)
+            # Rimuovi i duplicati nella colonna 'Secret Type' (prendendo solo la prima parola e rendendola minuscola)
+            regex_df['Detector'] = regex_df['Secret Type'].apply(lambda x: x.split()[0].strip().lower())
+            regex_df = regex_df.drop(columns=['Secret Type', 'Source', 'Pattern_ID', 'Regular Expression', 'Unnamed: 4'], axis=1)
+            expected_detectors = regex_df.drop_duplicates(subset=['Detector'])
     except Exception as e:
         print(f"Errore durante la lettura del file Excel: {e}")
         expected_detectors = []
@@ -90,41 +109,41 @@ for file_path in file_path_array:
     detector_mismatch = []  # Lista per i detector che non hanno 10 segreti
 
     # Raggruppa e conta i detector trovati
-    detectors_found_group = detectors_found.groupby('File').size().reset_index(name='Count')
+    detectors_found_group = detectors_found.groupby(column).size().reset_index(name='Count')
     for index, row in detectors_found_group.iterrows():
-        table_data.append([row['File'], row['Count']])
+        table_data.append([row[column], row['Count']])
 
         if("Secrets10" in file_path):
             # Se il numero di segreti non è 10, aggiungi il detector alla lista di mismatch
             if row['Count'] != 10:
-                detector_mismatch.append((row['File'], row['Count']))
+                detector_mismatch.append((row[column], row['Count']))
         else:
             if row['Count'] != 1:
-                detector_mismatch.append((row['File'], row['Count']))
+                detector_mismatch.append((row[column], row['Count']))
 
     # Prepara l'output
     output = []
 
-    expected_detectors.columns = ['File']
+    expected_detectors.columns = [column]
     # Tabella dei detector
     output.append("Tabella dei detector e segreti rilevati:")
-    output.append(tabulate(table_data, headers=['File', 'Numero segreti rilevati'], tablefmt='grid'))
+    output.append(tabulate(table_data, headers=[column, 'Numero segreti rilevati'], tablefmt='grid'))
 
     # Totale dei detector
     output.append(f"Detector trovati: {len(detectors_found['Detector'].unique())}")
     output.append(f"Detector Expected: {len(expected_detectors)}")
 
     # Falsi negativi
-    detectors_missing = expected_detectors.merge(detectors_found, on='File', how='left')
-    detectors_missing = detectors_missing.drop_duplicates(subset=['File', 'Secret']) # QUELLI CHE HANNO PIU DI UN SEGRETO
+    detectors_missing = expected_detectors.merge(detectors_found, on=column, how='left')
+    detectors_missing = detectors_missing.drop_duplicates(subset=[column, 'Secret']) # QUELLI CHE HANNO PIU DI UN SEGRETO
     detectors_missing.to_excel("detector_missing.xlsx", index=False)  # index=False evita di salvare l'indice del DataFrame
     output.append(f"Detector mancanti: {detectors_missing['Secret'].isna().sum()}")
     
     # Veri Positivi
-    output.append(f"Veri Positivi: {detectors_missing.drop_duplicates(subset=['File'])['Secret'].notna().sum()}")
+    output.append(f"Veri Positivi: {detectors_missing.drop_duplicates(subset=[column])['Secret'].notna().sum()}")
 
     # Falsi positivi
-    extra_detectors = expected_detectors.merge(detectors_found, on='File', how='right')
+    extra_detectors = expected_detectors.merge(detectors_found, on=column, how='right')
     extra_detectors.to_excel("extra_detectors.xlsx", index=False)  # index=False evita di salvare l'indice del DataFrame
     output.append(f"Detector extra: {extra_detectors['Secret'].isna().sum()}")
 
@@ -146,7 +165,7 @@ for file_path in file_path_array:
     output.append(f"\nFalsi Positivi: {falsi_positivi - len(detector_mismatch)}")
     output.append("\n")
     # Segnala i detector mancanti
-    detectors_nan = detectors_missing[detectors_missing['Secret'].isna()]['File'].tolist()
+    detectors_nan = detectors_missing[detectors_missing['Secret'].isna()][column].tolist()
     if detectors_nan:
         output.append("Elenco dei detector missing:")
         for detector in sorted(detectors_nan):
@@ -155,7 +174,7 @@ for file_path in file_path_array:
         output.append("Tutti i detector hanno un Secret presente.")
 
     # Salva l'output su un file
-    with open(os.path.join(results_dir, file_path.replace('output/', '')), 'w') as results_file:
+    with open(os.path.join(results_dir, file_path.replace('TruffleOutput/', '')), 'w') as results_file:
         results_file.write("\n".join(output))
 
     print("L'output è stato salvato nel file", results_file.name)

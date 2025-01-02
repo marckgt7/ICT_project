@@ -1,7 +1,7 @@
 import re
 import os 
 
-file_path = os.path.join('output', 'prova_Secrets1_docker.txt')
+file_path = os.path.join('TruffleOutput', 'prova_Secrets1_docker.txt')
 
 # Legge il contenuto del file
 with open(file_path, 'r', encoding='utf-8') as file:

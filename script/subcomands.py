@@ -25,18 +25,6 @@ commands = {
     #2: Scan a GitHub Org for only verified secrets
     #"./trufflehog-3.84.1/trufflehog.exe github --repo=https://github.com/marckgt7/ProvaTruffle ": "prova_Secrets1_github.txt",
     
-    #4: Scan a GitHub Repo + its Issues and Pull Requests
-    #"docker run --rm -it -v "+"${"+"PWD}:/pwd"+" trufflesecurity/trufflehog github --repo https://github.com/trufflesecurity/test_keys --issue-comments --pr-comments": "repo_issues_prs.txt",
-    
-    #5: Scan an S3 bucket for verified keys
-    #"docker run --rm -it -v "+"${"+"PWD}:/pwd"+" trufflesecurity/trufflehog s3 --bucket=<bucket name> --only-verified": "s3.txt",
-    
-    #6: Scan S3 buckets using IAM Roles
-    #"docker run --rm -it -v "+"${"+"PWD}:/pwd"+" trufflesecurity/trufflehog s3 --role-arn=<iam role arn>": "s3_iam_roles.txt",
-    
-    #7: Scan a Github Repo using SSH authentication in docker
-    #"docker run --rm -it -v "+"${"+"PWD}:/pwd"+" -v $HOME/.ssh:/root/.ssh:ro trufflesecurity/trufflehog:latest git ssh://github.com/trufflesecurity/test_keys": "repo_ssh.txt",
-    
     #8: Scan individual files or directories
     #"./trufflehog-3.84.1/trufflehog.exe filesystem data/Secrets1/": "prova_Secrets1_filesystem.txt",
     #"./trufflehog-3.84.1/trufflehog.exe filesystem data/FakeSecrets1/": "prova_Secrets1_filesystem_fake.txt",
@@ -48,17 +36,14 @@ commands = {
     "./trufflehog-3.84.1/trufflehog.exe filesystem data/Secrets100/": "prova_Secrets100_filesystem.txt",
     #"./trufflehog-3.84.1/trufflehog.exe filesystem data/FakeSecrets100/": "prova_Secrets100_filesystem_fake.txt"
 
-    #9: Scan GCS buckets for verified secrets
-    #"docker run --rm -it -v "+"${"+"PWD}:/pwd"+" trufflesecurity/trufflehog gcs --project-id=<project-ID> --cloud-environment --only-verified": "gcs.txt",
-    
     #10: Scan a Docker image for verified secrets
-   # "./trufflehog-3.84.1/trufflehog.exe docker --image localhost:5000/ict_project_image": "prova_Secrets1_docker.txt",
+    "./trufflehog-3.84.1/trufflehog.exe docker --image localhost:5000/ict_project_image": "prova_Secrets1_docker.txt"
     
     #11: Scan in CI
     #"docker run --rm -it -v "+"${"+"PWD}:/pwd"+" trufflesecurity/trufflehog git file://. --since-commit main --branch feature-1 --only-verified --fail": "CI.txt",
     
     #12: Scan a Postman workspace
-    #"docker run --rm -it -v "+"${"+"PWD}:/pwd"+" trufflesecurity/trufflehog postman --token=<postman api token> --workspace-id=<workspace id>": "postman.txt",
+    #"./trufflehog-3.84.1/trufflehog.exe postman --token=PMAK-6773b476df32b80001cecf50-b2c92fe098a7cd06167ba17c43c380ebb3 --workspace-id=e2d7eb70-568c-4b1f-8500-87ddea278ca4 ": "prova_Secrets1_postman.txt",
     
     #13: Scan a Jenkins server
     #"docker run --rm -it -v "+"${"+"PWD}:/pwd"+" trufflesecurity/trufflehog jenkins --url https://jenkins.example.com --username admin --password admin": "jenkins.txt",
