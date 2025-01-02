@@ -12,14 +12,16 @@ def merge_text_files(folder_path, output_file):
             for txt_file in txt_files:
                 file_path = os.path.join(folder_path, txt_file)
                 with open(file_path, 'r') as infile:
-                    outfile.write(infile.read())
-                    outfile.write('\n')  # Aggiunge una nuova linea tra i file
+                    lines = infile.readlines()
+                    if len(lines) > 2:
+                        outfile.write(''.join(lines[2:]))  # Salta le prime due righe
+                        outfile.write('\n')  # Aggiunge una nuova linea tra i file
 
         print(f"I file sono stati uniti con successo in {output_file}.")
     except Exception as e:
         print(f"Errore: {e}")
 
 # Esempio di utilizzo
-folder_path = 'data/Secrets1'  # Sostituisci con il percorso della tua cartella
-output_file = 'particular/output_unico.txt'  # Nome del file di output
+folder_path = 'data/Secrets10'  # Sostituisci con il percorso della tua cartella
+output_file = 'data/Secrets10.txt'  # Nome del file di output
 merge_text_files(folder_path, output_file)
