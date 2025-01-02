@@ -72,9 +72,8 @@ file_path_array = [ './TruffleOutput/prova_Secrets1_docker.txt',
                     './TruffleOutput/prova_Secrets10_filesystem.txt',
                     './TruffleOutput/prova_Secrets1_filesystem_unico.txt',
                     './TruffleOutput/prova_Secrets10_filesystem_unico.txt',
-
-                    #'./TruffleOutput/prova_Secrets1_filesystem_fake.txt',
-                    #'./TruffleOutput/prova_Secrets10_filesystem_fake.txt',
+                    './TruffleOutput/prova_Secrets1_filesystem_fake.txt',
+                    './TruffleOutput/prova_Secrets10_filesystem_fake.txt',
                     ]
 excel_file_path = "./data/Secret Regular Expression FILTERED.xlsx"  # Percorso del file Excel
 results_dir = "./checkSecretsResults"
