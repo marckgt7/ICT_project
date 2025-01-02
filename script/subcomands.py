@@ -33,8 +33,8 @@ commands = {
     #"./trufflehog-3.84.1/trufflehog.exe filesystem data/Secrets10/": "prova_Secrets10_filesystem.txt",
     #"./trufflehog-3.84.1/trufflehog.exe filesystem data/FakeSecrets10/": "prova_Secrets10_filesystem_fake.txt",
 
-    "./trufflehog-3.84.1/trufflehog.exe filesystem data/Secrets1.txt": "prova_Secrets1_filesystem_unico.txt",
-    "./trufflehog-3.84.1/trufflehog.exe filesystem data/Secrets10.txt": "prova_Secrets10_filesystem_unico.txt",
+    "./trufflehog-3.84.1/trufflehog.exe postman --token=PMAK-6773b476df32b80001cecf50-b2c92fe098a7cd06167ba17c43c380ebb3 --workspace-id=e2d7eb70-568c-4b1f-8500-87ddea278ca4 ": "prova_Secrets1_postman_unico.txt",
+    #"./trufflehog-3.84.1/trufflehog.exe filesystem data/Secrets10.txt": "prova_Secrets10_filesystem_unico.txt",
 
     #10: Scan a Docker image for verified secrets
     #"./trufflehog-3.84.1/trufflehog.exe docker --image localhost:5000/ict_project_image": "prova_Secrets1_docker.txt"
