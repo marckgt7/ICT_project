@@ -48,7 +48,7 @@ def analyze_detectors(results_file, numero, additional_fn_detectors):
                 results[detector]['FP'] += secrets  # All are false positives
             elif secrets < numero:
                 results[detector]['FP'] += secrets  # Found secrets are false positives
-                results[detector]['FN'] += numero - secrets  # The rest are false negatives
+                results[detector]['TN'] += numero - secrets  # The rest are false negatives
                         # Mark missing detectors as False Negatives
         missing_detectors = [f"Detector_{i+1}" for i in range(missing_detectors_count)]
         for detector in missing_detectors:
@@ -122,8 +122,15 @@ def save_confusion_matrix(tp, fp, fn,tn, accuracy, precision, recall, fscore, ou
         spine.set_linewidth(0.3)  # Set a thinner border (you can adjust the value)
 
     # Metrics pie chart
-    counts = [tp, fp, fn,tn]
-    labels_pie = ['True Positives', 'False Positives', 'False Negatives','True Negatives']
+    counts = [tp, fp, fn, tn]
+    filtered_counts = [value for value in counts if value > 0]
+    counts = filtered_counts
+    labels_pie = ['True Positives', 'False Positives', 'False Negatives', 'True Negatives']
+    filtered_counts_with_labels = [(label, value) for label, value in zip(labels_pie, counts) if value > 0]
+# Separare labels e counts filtrati
+    filtered_labels, filtered_counts = zip(*filtered_counts_with_labels) if filtered_counts_with_labels else ([], [])
+    labels_pie = filtered_labels
+
     colors_pie = [
             cmap(0.3),  # Greenish (near the start of the colormap)
             cmap(0.1),   # Blueish (midway through the colormap)
