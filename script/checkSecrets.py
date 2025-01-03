@@ -68,7 +68,7 @@ file_path_array = [ './TruffleOutput/prova_Secrets1_docker.txt',
                     './TruffleOutput/prova_Secrets1_filesystem.txt',
                     './TruffleOutput/prova_Secrets1_git.txt',
                     './TruffleOutput/prova_Secrets1_github.txt',
-                    './TruffleOutput/prova_Secrets1_postman_unico.txt',
+                    #'./TruffleOutput/prova_Secrets10_postman.txt',
                     './TruffleOutput/prova_Secrets10_filesystem.txt',
                     './TruffleOutput/prova_Secrets1_filesystem_unico.txt',
                     './TruffleOutput/prova_Secrets10_filesystem_unico.txt',
@@ -92,11 +92,11 @@ for file_path in file_path_array:
     try:
         if('unico' in file_path):
             column = 'Detector'
-            #excel_file_path = 'detector_missing.xlsx'
-            #regex_df = pd.read_excel(excel_file_path)
-            #regex_df = regex_df.drop(columns=['Detector', 'Secret'], axis=1)
-            #regex_df.rename(columns={'File': 'Detector'}, inplace=True)
-            #expected_detectors = regex_df.drop_duplicates(subset=['Detector'])
+            excel_file_path = 'detector_missing.xlsx'
+            regex_df = pd.read_excel(excel_file_path)
+            regex_df = regex_df.drop(columns=['Detector', 'Secret'], axis=1)
+            regex_df.rename(columns={'File': 'Detector'}, inplace=True)
+            expected_detectors = regex_df.drop_duplicates(subset=['Detector'])
         else:
             regex_df = pd.read_excel(excel_file_path)
             # Rimuovi i duplicati nella colonna 'Secret Type' (prendendo solo la prima parola e rendendola minuscola)
