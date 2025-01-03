@@ -22,6 +22,6 @@ def merge_text_files(folder_path, output_file):
         print(f"Errore: {e}")
 
 # Esempio di utilizzo
-folder_path = 'data/Secrets10'  # Sostituisci con il percorso della tua cartella
-output_file = 'data/Secrets10.txt'  # Nome del file di output
+folder_path = 'data/Secrets1'  # Sostituisci con il percorso della tua cartella
+output_file = 'data/Secrets1_postman.txt'  # Nome del file di output
 merge_text_files(folder_path, output_file)
