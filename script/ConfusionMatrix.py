@@ -157,7 +157,7 @@ def save_confusion_matrix(tp, fp, fn,tn, accuracy, precision, recall, fscore, ou
     ax[1].set_title('Confusion Matrix Distribution', fontsize=8)
 
     # Display metrics in a cleaner format
-    plt.figtext(0.5, 0.005, f"Accuracy: {accuracy:.2f} | Precision: {precision:.2f} | Recall: {recall:.2f} | F1-score: {fscore:.2f}",
+    plt.figtext(0.5, 0.005, f" Precision: {precision:.2f} | Recall: {recall:.2f} ",
                 ha="center", fontsize=7, bbox={"facecolor":"#ECEFF1", "alpha":0.7, "pad":4})
 
     plt.tight_layout(pad=0.9)
