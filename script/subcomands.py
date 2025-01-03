@@ -20,24 +20,24 @@ def delete_files_in_folder(folder_path):
 commands = {
 
     #1: Scan a repo for only verified secrets
-    #"./trufflehog-3.84.1/trufflehog.exe git https://github.com/marckgt7/ProvaTruffle": "prova_Secrets1_git.txt",
+    "./trufflehog-3.84.1/trufflehog.exe git https://github.com/marckgt7/ProvaTruffle --allow-verification-overlap": "prova_Secrets1_git.txt",
     
     #2: Scan a GitHub Org for only verified secrets
-    #"./trufflehog-3.84.1/trufflehog.exe github --repo=https://github.com/marckgt7/ProvaTruffle ": "prova_Secrets1_github.txt",
+    "./trufflehog-3.84.1/trufflehog.exe github --repo=https://github.com/marckgt7/ProvaTruffle --allow-verification-overlap": "prova_Secrets1_github.txt",
     
     #8: Scan individual files or directories
-    #"./trufflehog-3.84.1/trufflehog.exe filesystem data/Secrets1/": "prova_Secrets1_filesystem.txt",
-    #"./trufflehog-3.84.1/trufflehog.exe filesystem data/FakeSecrets1/": "prova_Secrets1_filesystem_fake.txt",
+    "./trufflehog-3.84.1/trufflehog.exe filesystem data/Secrets1/ --allow-verification-overlap": "prova_Secrets1_filesystem.txt",
+    "./trufflehog-3.84.1/trufflehog.exe filesystem data/FakeSecrets1/ --allow-verification-overlap": "prova_Secrets1_filesystem_fake.txt",
 
 
-    #"./trufflehog-3.84.1/trufflehog.exe filesystem data/Secrets10/": "prova_Secrets10_filesystem.txt",
-    #"./trufflehog-3.84.1/trufflehog.exe filesystem data/FakeSecrets10/": "prova_Secrets10_filesystem_fake.txt",
+    "./trufflehog-3.84.1/trufflehog.exe filesystem data/Secrets10/ --allow-verification-overlap": "prova_Secrets10_filesystem.txt",
+    "./trufflehog-3.84.1/trufflehog.exe filesystem data/FakeSecrets10/ --allow-verification-overlap": "prova_Secrets10_filesystem_fake.txt",
 
-    "./trufflehog-3.84.1/trufflehog.exe filesystem data/Secrets1.txt": "prova_Secrets1_filesystem_unico.txt",
-    "./trufflehog-3.84.1/trufflehog.exe filesystem data/Secrets10.txt": "prova_Secrets10_filesystem_unico.txt",
+    "./trufflehog-3.84.1/trufflehog.exe filesystem data/Secrets1.txt --allow-verification-overlap": "prova_Secrets1_filesystem_unico.txt",
+    "./trufflehog-3.84.1/trufflehog.exe filesystem data/Secrets10.txt --allow-verification-overlap": "prova_Secrets10_filesystem_unico.txt",
 
     #10: Scan a Docker image for verified secrets
-    #"./trufflehog-3.84.1/trufflehog.exe docker --image localhost:5000/ict_project_image": "prova_Secrets1_docker.txt"
+    #"./trufflehog-3.84.1/trufflehog.exe docker --image localhost:5000/ict_project_image --allow-verification-overlap": "prova_Secrets1_docker.txt"
     
     #11: Scan in CI
     #"docker run --rm -it -v "+"${"+"PWD}:/pwd"+" trufflesecurity/trufflehog git file://. --since-commit main --branch feature-1 --only-verified --fail": "CI.txt",
